@@ -1,0 +1,86 @@
+\section{Computational Work and Reproducibility}
+\label{sec:computational-work}
+
+Computation played two distinct roles in this investigation: discovering
+patterns that motivated mathematical questions, and verifying finite
+instances of the resulting claims. A companion repository contains the
+enumeration algorithms, independent verifiers, graph-analysis tools, and
+scripts used to generate the reported data.
+
+\subsection{Exhaustive Enumeration}
+
+Ordinary $n$-queens placements are represented by permutations
+$\sigma\in S_n$, where $\sigma(i)$ denotes the column occupied by the queen
+in row $i$. A depth-first search enumerates these permutations while
+maintaining bitmasks for occupied columns and diagonals. At each row, only
+positions satisfying the ordinary queens constraints are considered.
+Consequently, every valid placement is generated exactly once.
+
+For each solution, the program computes
+\[
+A(\sigma)=\#\{i:|\sigma(i+1)-\sigma(i)|=2\},
+\]
+\[
+B(\sigma)=\#\{i:|\sigma(i+2)-\sigma(i)|=1\},
+\qquad e(\sigma)=A(\sigma)+B(\sigma).
+\]
+Since a knight move spans either one or two rows, these statistics count
+every knight-adjacent pair exactly once. Computing them takes $O(n)$
+operations per enumerated solution.
+
+The enumeration records the total number of ordinary queens solutions,
+the number of knight-independent solutions, and the distribution of
+$e(\sigma)$. The reported exhaustive results extend through $n=15$.
+Ordinary solution counts are compared with established enumeration data,
+and knight-independent counts are compared with published reference
+sequences. These comparisons are consistency checks, not substitutes for
+verifying the individual graph statistics.
+
+\subsection{Graph Construction and Classification}
+
+Each queens placement induces a graph $G(\sigma)$ whose vertices represent
+queens and whose edges represent knight-adjacent pairs. The repository
+constructs these graphs and computes their edge counts, connected
+components, triangle counts, and bipartiteness. Graph-isomorphism
+classification uses isomorphism-invariant hashes to partition candidates,
+followed by exact isomorphism tests. Hash equality alone is never treated
+as proof of isomorphism.
+
+The same framework can be extended to other leaper pieces by changing the
+permitted displacement vectors. The resulting data support the
+investigation of how knight interactions vary across queens placements.
+
+\subsection{Independent Verification and Modular Experiments}
+
+Candidate placements are checked independently of the enumeration routine.
+A separate verifier written in C tests the column, diagonal, and
+knight-independence constraints. SageMath scripts check finite instances
+of the modular construction
+\[
+\sigma(i)=3i\bmod n
+\]
+under the relevant arithmetic conditions. These checks help detect
+implementation errors but do not replace the general mathematical proof.
+
+For residue classes not covered by the simple modular construction,
+randomized backtracking can be used to find candidate witnesses. Search
+records should preserve the board size, random seed, search limits,
+resulting permutation, and verification outcome. A successful search
+establishes the validity of its particular witness; a failed bounded
+search does not establish nonexistence.
+
+\subsection{Reproducibility and Limitations}
+
+The repository separates source code, tests, reference data, generated
+results, and scripts for reproducing the computational tables. Generated
+CSV files are accompanied by metadata recording the software environment,
+command used, and completed board-size range. Automated checks verify
+internal identities, including agreement between the edge-count
+distribution and the total number of enumerated solutions.
+
+The computations establish exact results only for the ranges that were
+exhaustively completed. Randomized searches provide finite examples, not
+universal existence theorems, and finite numerical patterns do not by
+themselves establish asymptotic conjectures. The repository is intended
+to make the experiments independently checkable and to support further
+mathematical investigation.
